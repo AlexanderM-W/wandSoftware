@@ -7,7 +7,7 @@ import time
 #import cv2
 
 rasPi = True
-globalHeigh_offset = 35.22 #[mm] measured manually, found to be 35.70mm in cad..
+globalHeight_offset = 35.22 #[mm] measured manually, found to be 35.70mm in cad..
 
 if(rasPi == True):
     from picamera import PiCamera
