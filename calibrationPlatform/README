@@ -9,7 +9,8 @@ light <light intensity on DIAS led>
 
 
 In order to calibrate run the "calibrate" command and let the stepper run until it slips then press the switch in order to stop the calibration.
-After calibration the local z height is 0.00 mm and the global z height (from the top of the base to the top of the horizontal platform) is 35.70 mm
+After calibration the local z height is 0.00 mm and the global z height (from the top of the base to the top of the horizontal platform) is 35.22mm. This was measured manually,
+the calculated height using CAD software is 35.70 mm
 
 Note that the script can be run from a non RPi computer if the variable rasPi is set to False. 
 
