@@ -1,0 +1,16 @@
+Simple script that communicates with an arduino in order to move a stepper to a given position.
+
+It takes the following arguments
+d <height in mm> "height is referenced to the local pose of the stepper, hence d -1 will always move the stepper down by 1 mm"
+f <.txt with 1 height per line> 
+h <help>
+calibrate
+light <light intensity on DIAS led>
+
+
+In order to calibrate run the "calibrate" command and let the stepper run until it slips then press the switch in order to stop the calibration.
+After calibration the local z height is 0.00 mm and the global z height (from the top of the base to the top of the horizontal platform) is 35.70 mm
+
+Note that the script can be run from a non RPi computer if the variable rasPi is set to False. 
+
+Images are saved with the current global height as part of the name in the local directory.
