@@ -2,7 +2,7 @@ Simple script that communicates with an arduino in order to move a stepper to a 
 
 It takes the following arguments
 d <height in mm> "height is referenced to the local pose of the stepper, hence d -1 will always move the stepper down by 1 mm"
-f <.txt with 1 height per line> 
+f <.txt with 1 height instruction per line> 
 h <help>
 calibrate
 light <light intensity on DIAS led>
@@ -15,3 +15,8 @@ the calculated height using CAD software is 35.70 mm
 Note that the script can be run from a non RPi computer if the variable rasPi is set to False. 
 
 Images are saved with the current global height as part of the name in the local directory.
+
+HOW TO USE
+1. git clone the project.
+2. run "python3 calibrationHost.py" if this is not on a RPi with a camera set the rasPi variable to False
+3. enter the desired commands.
