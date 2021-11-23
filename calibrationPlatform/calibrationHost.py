@@ -38,6 +38,7 @@ time.sleep(2)
 
 while(1):
     command = input("Please enter command: ")
+    #file input
     if(command[:1] == "f"):
         f = open(command[2:], "r")
         for x in f:
@@ -48,10 +49,12 @@ while(1):
             print("platform move ", stepsMoved, " now at step pose ", localPose_steps, " metric pose ", localPose_mm,"mm")
             globalHeight = float(localPose_mm)+globalHeight_offset
             print("global height in mm",str(globalHeight))
-            takeImg(globalHeight)          
+            takeImg(globalHeight)   
+    #help
     elif(command == "h"):
         print("f <path_to_file>")
         print("d <distance_in_mm>")
+    #distance
     elif(command[:1] == "d"):
         ser.write(str.encode(command[2:]))
         time.sleep(0.1)
@@ -62,11 +65,13 @@ while(1):
         globalHeight = float(localPose_mm)+globalHeight_offset
         print("global height in mm",str(globalHeight))
         takeImg(globalHeight)
+    #calibrate
     elif(command == "calibrate"):
         ser.write(str.encode(command))
         time.sleep(0.1)
         line = ser.readline()
         print(line)
+    #light
     elif(command[:5] == "light"):
         if(rasPi == True):
             i2cPWM.setDias(int(command[6:]))
