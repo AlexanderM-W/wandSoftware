@@ -73,10 +73,13 @@ class PiicoDev_CAP1203(object):
         self.i2c.writeto_mem(self.addr, int.from_bytes(address,"big"), bytes([new_byte]))
     
     def sensorEnable(self, sensor):
-        self.setBits(b'\x21',bytes([sensor]),b'\x03')
+        self.setBits(b'\x21',bytes([sensor]),b'\x07')
 
     def clearInt(self):
         self.setBits(b'\x00',bytes([0]),b'\x01')
+
+    def setRepeatRate(self, sensor):
+        self.setBits(b'\x28',bytes([sensor]),b'\x03')
 
     def setNoiseThresh(self, threshold):
         self.setBits(b'\x38',bytes([threshold]),b'\x03')
@@ -84,11 +87,18 @@ class PiicoDev_CAP1203(object):
     def setAvgSample(self, samples):
         self.setBits(b'\x24',bytes([samples*16]),b'\x70')
 
+    def powerButtonConf(self, time):
+        self.setBits(b'\x61',bytes([time]),b'\x07')
+        
     def setPowerButton(self, button):
         self.setBits(b'\x60',bytes([button]),b'\x07')
 
     def getSensitivity(self):
         sensitivity_control = self.i2c.readfrom_mem(self.addr, int.from_bytes(_SENSITIVITY_CONTROL,"big"), 1)
+
+    def getInt(self):
+        general_status_value = self.i2c.readfrom_mem(self.addr, int.from_bytes(_MAIN_CONTROL,"big"), 1)
+        return general_status_value
 
     def setSensitivity(self):
         self.i2c.writeto_mem(self.addr, int.from_bytes(_SENSITIVITY_CONTROL,"big"), 0x6F)
