@@ -1,12 +1,53 @@
-import RPi.GPIO as GPIO    # Import Raspberry Pi GPIO library
-from time import sleep     # Import the sleep function from the time module
-GPIO.setwarnings(False)    # Ignore warning for now
-GPIO.setmode(GPIO.BOARD)   # Use physical pin numbering
-GPIO.setup(7, GPIO.OUT, initial=GPIO.LOW)   # Set pin 8 to be an output pin and set initial value to low (off)
+from time import sleep
+from gpiozero import  PWMLED #LED,
+from gpiozero.pins.rpigpio import RPiGPIOFactory
+from gpiozero.pins.pigpio import PiGPIOFactory
 
+# pi_led_control
+# this module implement PWM Led control for GPIO
 
-while True: # Run forever
-    GPIO.output(7, GPIO.LOW) # Turn on
-    sleep(5)                  # Sleep for 1 second
-    GPIO.output(7, GPIO.LOW)  # Turn off
-    sleep(1) 
+DIAS_LED_PIN = 12
+FLASH_LED_PIN = 13
+
+HW_PWM = True
+
+class PiLedControll:
+    dias_led = None
+    flash_led = None
+    def __init__(self):
+        if HW_PWM:
+            myfactory = PiGPIOFactory()
+        else:
+            myfactory = None
+        self.dias_led = PWMLED(DIAS_LED_PIN, pin_factory=myfactory)
+        #self.flash_led = PWMLED(FLASH_LED_PIN, pin_factory=myfactory, frequency=50)
+        self.flash_led = PWMLED(FLASH_LED_PIN, pin_factory=myfactory)
+    def set_dias(self, value):
+        if value:
+            self.dias_led.value = value
+        else:
+            self.dias_led.value = 0
+
+    def set_flash(self, value):
+        if value:
+            self.flash_led.value = value
+        else:
+            self.flash_led.value = 0
+
+    def off(self):
+        self.dias_led.value = 0
+        self.flash_led.value = 0
+
+if __name__ == '__main__':
+    lc = PiLedControll()
+#    lc.set_dias(0.3)
+#    sleep(2)
+#    lc.set_dias(False)
+#    sleep(2)
+    while(1):
+        lc.set_flash(0)
+        lc.set_dias(0)
+        sleep(1)
+ #   lc.set_dias(0.3)
+#    sleep(11)
+    #lc.off()

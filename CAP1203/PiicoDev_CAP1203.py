@@ -2,7 +2,12 @@
 # Ported to MicroPython by Peter Johnston at Core Electronics JUN 2021
 # Original repo by SparkFun https://github.com/sparkfun/SparkFun_CAP1203_Arduino_Library
 
-from PiicoDev_Unified import *
+#from PiicoDev_Unified import *
+from smbus2 import SMBus, i2c_msg
+from time import sleep
+from math import ceil
+    
+
 
 compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 
@@ -28,6 +33,90 @@ _PRODUCT_ID = b'\xFD'
 # Product ID - always the same (pg. 22)
 _PROD_ID_VALUE = b'\x6D'
 
+def sleep_ms(t):
+    sleep(t/1000)
+
+############################
+### Generic I2C functons ###
+############################
+
+class I2CBase:
+    def writeto_mem(self, addr, memaddr, buf, *, addrsize=8):
+        raise NotImplementedError("writeto_mem")
+
+    def readfrom_mem(self, addr, memaddr, nbytes, *, addrsize=8):
+        raise NotImplementedError("readfrom_mem")
+
+    def write8(self, addr, buf, stop=True):
+        raise NotImplementedError("write")
+
+    def read16(self, addr, nbytes, stop=True):
+        raise NotImplementedError("read")
+
+    def __init__(self, bus=None, freq=None, sda=None, scl=None):
+        raise NotImplementedError("__init__")
+
+class I2CUnifiedLinux(I2CBase):
+    def __init__(self, bus=None):
+        if bus is None:
+            bus = 1
+        self.i2c = SMBus(bus)
+
+    def readfrom_mem(self, addr, memaddr, nbytes, *, addrsize=8):
+        data = [None] * nbytes # initialise empty list
+        self.smbus_i2c_read(addr, memaddr, data, nbytes, addrsize=addrsize)
+        return data
+    
+    def writeto_mem(self, addr, memaddr, buf, *, addrsize=8):
+        self.smbus_i2c_write(addr, memaddr, buf, len(buf), addrsize=addrsize)
+    
+    def smbus_i2c_write(self, address, reg, data_p, length, addrsize=8):
+        ret_val = 0
+        data = []
+        for index in range(length):
+            data.append(data_p[index])
+        if addrsize == 8:
+            msg_w = i2c_msg.write(address, [reg] + data)
+        elif addrsize == 16:
+            msg_w = i2c_msg.write(address, [reg >> 8, reg & 0xff] + data)
+        else:
+            raise Exception("address must be 8 or 16 bits long only")
+        self.i2c.i2c_rdwr(msg_w)
+        return ret_val
+        
+    def smbus_i2c_read(self, address, reg, data_p, length, addrsize=8):
+        ret_val = 0
+        if addrsize == 8:
+            msg_w = i2c_msg.write(address, [reg]) # warning this is set up for 16-bit addresses
+        elif addrsize == 16:
+            msg_w = i2c_msg.write(address, [reg >> 8, reg & 0xff]) # warning this is set up for 16-bit addresses
+        else:
+            raise Exception("address must be 8 or 16 bits long only")
+        msg_r = i2c_msg.read(address, length)
+        self.i2c.i2c_rdwr(msg_w, msg_r)
+        if ret_val == 0:
+            for index in range(length):
+                data_p[index] = ord(msg_r.buf[index])
+        return ret_val
+    
+    def write8(self, addr, reg, data):
+        if reg is None:
+            d = int.from_bytes(data, 'big')
+            self.i2c.write_byte(addr, d)
+        else:
+            r = int.from_bytes(reg, 'big')
+            d = int.from_bytes(data, 'big')
+            self.i2c.write_byte_data(addr, r, d)
+    
+    def read16(self, addr, reg):
+        regInt = int.from_bytes(reg, 'big')
+        return self.i2c.read_word_data(addr, regInt).to_bytes(2, byteorder='little', signed=False)
+
+
+##################################
+### CAP1203 specific functions ###
+##################################
+
 class PiicoDev_CAP1203(object):
     
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=_CAP1203Address, touchmode = "multi", sensitivity = 3):
@@ -38,7 +127,8 @@ class PiicoDev_CAP1203(object):
                 print(compat_str)
         except:
             print(compat_str)
-        self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
+        #self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
+        self.i2c =  I2CUnifiedLinux(bus=bus)
         self.addr = addr
         
         for i in range(0,1):
