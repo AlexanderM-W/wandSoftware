@@ -10,23 +10,28 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(7, GPIO.IN)
 
-touchSensor = PiicoDev_CAP1203(bus=5,sensitivity=1,touchmode='single')
+frontSensor = PiicoDev_CAP1203(bus=5,sensitivity=1,touchmode='single')
+backSensor = PiicoDev_CAP1203(bus=1,sensitivity=1,touchmode='single')
 time.sleep(1)
-touchSensor.setNoiseThresh(0)
-touchSensor.setAvgSample(1)
-touchSensor.sensorEnable(1)
-touchSensor.setPowerButton(0)
-touchSensor.powerButtonConf(0)
-touchSensor.setRepeatRate(0)
+frontSensor.setNoiseThresh(0)
+frontSensor.setAvgSample(1)
+frontSensor.sensorEnable(1)
+frontSensor.setPowerButton(0)
+frontSensor.powerButtonConf(0)
+frontSensor.setRepeatRate(0)
+
+backSensor.setNoiseThresh(0)
+backSensor.setAvgSample(1)
+backSensor.sensorEnable(1)
+backSensor.setPowerButton(0)
+backSensor.powerButtonConf(7) # Only generates an interrupt/output after 2.24s. see p. 44 
+backSensor.setRepeatRate(0)
 
 
 while True:
-    # Example: Display touch-pad statuses
-    
-    status = touchSensor.read()
-    #status = touchSensor.readDeltaCounts()
-    print("Touch Pad Status: " + str(status[1]) + "  " + str(status[2]) + "  " + str(status[3]))
-#    print("GPIO no " + str(7) + ": " + str(GPIO.input(7)))
-#    print(touchSensor.getInt())
-    touchSensor.clearInt()
-    sleep_ms(300)
+    status_frontSensor = frontSensor.read()
+    status_backSensor = backSensor.read()
+    print("Front touchpad: " + str(status_frontSensor[1]) + " // Back touchpad: " + str(status_backSensor[1]))
+    frontSensor.clearInt()
+    backSensor.clearInt()
+    sleep_ms(150)

@@ -120,13 +120,13 @@ class I2CUnifiedLinux(I2CBase):
 class PiicoDev_CAP1203(object):
     
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=_CAP1203Address, touchmode = "multi", sensitivity = 3):
-        try:
-            if compat_ind >= 1:
-                pass
-            else:
-                print(compat_str)
-        except:
-            print(compat_str)
+#        try:
+#            if compat_ind >= 1:
+#                pass
+#            else:
+#                print(compat_str)
+#        except:
+#            print(compat_str)
         #self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
         self.i2c =  I2CUnifiedLinux(bus=bus)
         self.addr = addr

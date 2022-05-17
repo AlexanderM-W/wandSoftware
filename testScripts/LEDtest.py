@@ -44,10 +44,11 @@ if __name__ == '__main__':
 #    sleep(2)
 #    lc.set_dias(False)
 #    sleep(2)
-    while(1):
-        lc.set_flash(0)
-        lc.set_dias(0)
-        sleep(1)
- #   lc.set_dias(0.3)
+    #while(1):
+    lc.set_flash(0.1)
+    lc.set_dias(0.3)
+    sleep(2)
+    lc.set_dias(0.0)
+    lc.set_flash(0.0)
 #    sleep(11)
     #lc.off()
