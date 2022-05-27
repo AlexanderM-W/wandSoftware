@@ -6,12 +6,9 @@ from PiicoDev_CAP1203 import sleep_ms
 #from PiicoDev_Unified import sleep_ms # cross-platform-compatible sleep
 import time
 
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(7, GPIO.IN)
-
 frontSensor = PiicoDev_CAP1203(bus=5,sensitivity=1,touchmode='single')
 backSensor = PiicoDev_CAP1203(bus=1,sensitivity=1,touchmode='single')
+
 time.sleep(1)
 frontSensor.setNoiseThresh(0)
 frontSensor.setAvgSample(1)
@@ -31,7 +28,7 @@ backSensor.setRepeatRate(0)
 while True:
     status_frontSensor = frontSensor.read()
     status_backSensor = backSensor.read()
-    print("Front touchpad: " + str(status_frontSensor[1]) + " // Back touchpad: " + str(status_backSensor[1]))
+    print("Front touchpad: " + str(status_frontSensor[1]) + " // Rear touchpad: " + str(status_backSensor[1]))
     frontSensor.clearInt()
     backSensor.clearInt()
-    sleep_ms(150)
+    sleep_ms(200)
