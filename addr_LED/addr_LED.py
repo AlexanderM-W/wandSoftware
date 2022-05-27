@@ -7,68 +7,47 @@ import board
 import neopixel
 
 
-# Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
-# NeoPixels must be connected to D10, D12, D18 or D21 to work.
-pixel_pin = board.D18
+class NeoPixel:
+    def __init__(self):
+        # Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
+        # NeoPixels must be connected to D10, D12, D18 or D21 to work.
+        self.pixel_pin = board.D18
 
-# The number of NeoPixels
-num_pixels = 2
+        # The number of NeoPixels
+        self.num_pixels = 2
 
-# The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
-# For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
-ORDER = neopixel.RGB
+        # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
+        # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
+        self.ORDER = neopixel.RGB
 
-pixels = neopixel.NeoPixel(
-    pixel_pin, num_pixels, brightness=0.2, auto_write=False, pixel_order=ORDER
-)
+        self.brightness = 0.5
+        
+        self.pixels = neopixel.NeoPixel(
+            self.pixel_pin, self.num_pixels, brightness=self.brightness, auto_write=False, pixel_order=self.ORDER
+        )
 
 
-while True:
-    # Comment this line out if you have RGBW/GRBW NeoPixels
-#    pixels.fill((255, 0, 0))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    pixels.fill((255, 0, 0))
-    pixels.show()
+    def statusLED_front(self, colors): # note that colors is a 1x3 RGB list
+        self.pixels[0] = colors
+        
+    def statusLED_back(self, colors):
+        self.pixels[1] = colors
+
+    def statusLED_both(self, colors):
+        self.pixels.fill(colors)
+
+    def statusLED_show(self):
+        self.pixels.show()
+
+
+if __name__ == "__main__":
+    addrLED = NeoPixel()
+
+    addrLED.statusLED_front([255,255,255])
+    addrLED.statusLED_back([255,0,0])
+    addrLED.statusLED_show()
+
     time.sleep(2)
 
-    pixels.fill((0, 255, 0))
-    pixels.show()
-    time.sleep(2)
-
-    pixels.fill((0, 0, 255))
-    pixels.show()
-    time.sleep(2)
-
-    pixels.fill((255, 255, 255))
-    pixels.show()
-    time.sleep(2)
-
-    pixels.fill((0,0,0))
-    pixels.show()
-    time.sleep(4)
-
-
-    pixels[0] = (255,0,0)
-    pixels[1] = (0,255,255)
-    pixels.show()
-    time.sleep(4)
-
-    pixels.fill((0,0,0))
-    pixels.show()
-    time.sleep(1)
-    break
-    # Comment this line out if you have RGBW/GRBW NeoPixels
-#    pixels.fill((0, 255, 0))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 255, 0, 0))
- #   pixels.show()
- #   time.sleep(1)
-
-    # Comment this line out if you have RGBW/GRBW NeoPixels
- #   pixels.fill((0, 0, 255))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 0, 255, 0))
- #   pixels.show()
- #   time.sleep(1)
-
-#    rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step
+    addrLED.statusLED_both([0,0,0])
+    addrLED.statusLED_show()
