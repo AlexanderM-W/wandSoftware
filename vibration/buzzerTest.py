@@ -2,16 +2,26 @@ import RPi.GPIO as GPIO
 import time
 
 
-buzzer = 26
-switch = 31
-
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(buzzer, GPIO.OUT)
 
-for i in range(5):
-    GPIO.output(buzzer, GPIO.HIGH)
-    time.sleep(1)
-    GPIO.output(buzzer, GPIO.LOW)
-    time.sleep(1)
+class Buzzer:
+    def __init__(self):
+        self.buzzer = 26
+        
+        GPIO.setup(self.buzzer, GPIO.OUT)
 
-GPIO.cleanup()
+    def buzzerOn(self):
+      #set software limit to max
+        GPIO.output(self.buzzer, GPIO.HIGH)
+
+    def buzzerOff(self):
+        GPIO.output(self.buzzer, GPIO.LOW)
+
+
+### debug ###
+if __name__ == "__main__":
+    buzzer = Buzzer()
+
+    buzzer.buzzerOn()
+    time.sleep(1)
+    buzzer.buzzerOff()
