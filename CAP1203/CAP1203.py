@@ -1,15 +1,7 @@
-# A simple class to read data from the Core Electronics PiicoDev CAP1203 Capacitive Touch Sensor
-# Ported to MicroPython by Peter Johnston at Core Electronics JUN 2021
-# Original repo by SparkFun https://github.com/sparkfun/SparkFun_CAP1203_Arduino_Library
-
-#from PiicoDev_Unified import *
 from smbus2 import SMBus, i2c_msg
 from time import sleep
 from math import ceil
     
-
-
-compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 
 # Declare I2C Address
 _CAP1203Address = 0x28
@@ -40,23 +32,7 @@ def sleep_ms(t):
 ### Generic I2C functons ###
 ############################
 
-class I2CBase:
-    def writeto_mem(self, addr, memaddr, buf, *, addrsize=8):
-        raise NotImplementedError("writeto_mem")
-
-    def readfrom_mem(self, addr, memaddr, nbytes, *, addrsize=8):
-        raise NotImplementedError("readfrom_mem")
-
-    def write8(self, addr, buf, stop=True):
-        raise NotImplementedError("write")
-
-    def read16(self, addr, nbytes, stop=True):
-        raise NotImplementedError("read")
-
-    def __init__(self, bus=None, freq=None, sda=None, scl=None):
-        raise NotImplementedError("__init__")
-
-class I2CUnifiedLinux(I2CBase):
+class I2CLinux:
     def __init__(self, bus=None):
         if bus is None:
             bus = 1
@@ -112,31 +88,23 @@ class I2CUnifiedLinux(I2CBase):
         regInt = int.from_bytes(reg, 'big')
         return self.i2c.read_word_data(addr, regInt).to_bytes(2, byteorder='little', signed=False)
 
+#################################
+#################################
+#################################
+
 
 ##################################
 ### CAP1203 specific functions ###
 ##################################
 
-class PiicoDev_CAP1203(object):
+class CAP1203(object):
     
     def __init__(self, bus=None, freq=None, sda=None, scl=None, addr=_CAP1203Address, touchmode = "multi", sensitivity = 3):
-#        try:
-#            if compat_ind >= 1:
-#                pass
-#            else:
-#                print(compat_str)
-#        except:
-#            print(compat_str)
-        #self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
-        self.i2c =  I2CUnifiedLinux(bus=bus)
+        self.i2c =  I2CLinux(bus=bus)
         self.addr = addr
         
         for i in range(0,1):
             try:
-#                 product_ID_value = self.i2c.readfrom_mem(self.addr, int.from_bytes(_PRODUCT_ID,"big"), 1) 
-#                 # to initialise the device
-#                 if (product_ID_value != _PROD_ID_VALUE):
-#                     print("Device ID does not match PiicoDev CAP1203")
                 if (touchmode == "single"):
                     self.setBits(_MULTIPLE_TOUCH_CONFIG,b'\x80',b'\x80')
                 if (touchmode == "multi"):
@@ -239,3 +207,36 @@ class PiicoDev_CAP1203(object):
             return dict([(1,float('NaN')),(2,float('NaN')),(3,float('NaN'))])
         return dict([(1,DC1),(2,DC2),(3,DC3)]) # dict key matches hardware label
         
+
+#################################
+#################################
+#################################
+
+if __name__ == "__main__":
+    frontSensor = CAP1203(bus=5,sensitivity=1,touchmode='single')
+    backSensor = CAP1203(bus=1,sensitivity=1,touchmode='single')
+
+    sleep(1)
+    frontSensor.setNoiseThresh(0)
+    frontSensor.setAvgSample(1)
+    frontSensor.sensorEnable(1)
+    frontSensor.setPowerButton(0)
+    frontSensor.powerButtonConf(0)
+    frontSensor.setRepeatRate(0)
+
+    backSensor.setNoiseThresh(0)
+    backSensor.setAvgSample(1)
+    backSensor.sensorEnable(1)
+    backSensor.setPowerButton(0)
+    backSensor.powerButtonConf(7) # Only generates an interrupt/output after 2.24s. see p. 44 
+    backSensor.setRepeatRate(0)
+
+
+    while True:
+        status_frontSensor = frontSensor.read()
+        status_backSensor = backSensor.read()
+        print("Front touchpad: " + str(status_frontSensor[1]) + " // Rear touchpad: " + str(status_backSensor[1]))
+        frontSensor.clearInt()
+        backSensor.clearInt()
+        sleep_ms(200)
+
