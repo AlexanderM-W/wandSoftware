@@ -9,12 +9,12 @@ import time
 
 class Stepper():    
     def __init__(self):
-
-
         #define GPIO pins
         self.GPIO_pins = (-1, -1, -1) # Microstep Resolution MS1-MS3 -> GPIO Pin
         self.direction = 24      	 # Direction -> GPIO Pin
         self.step = 23      # Step -> GPIO Pin
+        self.enable = 14
+        GPIO.setup(self.enable, GPIO.OUT)
 
         self.up = 0
         self.down = 1
@@ -29,26 +29,32 @@ class Stepper():
             self.mymotortest.motor_go(self.down, "Full" , steps, .002, True, .05)
 
     def calibrate(self):
+        self.mymotortest.motor_go(self.down, "Full", 2000, 0.001, True, 0.05)
         self.mymotortest.motor_go(self.up, "Full" , 15000, .0008, True, .05)
 
     def setRest(self):
-        GPIO.output(self.step, GPIO.LOW)
-        GPIO.output(self.direction, GPIO.LOW)
+        #GPIO.output(self.step, GPIO.LOW)
+        #GPIO.output(self.direction, GPIO.LOW)
+        self.disableStepper()
 
     def mmToStep(self,mm):
         return int(mm*200)
+
+    def enableStepper(self):
+        GPIO.output(self.enable, GPIO.LOW)
+
+    def disableStepper(self):
+        GPIO.output(self.enable, GPIO.HIGH)
 
 if __name__ == "__main__":
     
     # Declare an named instance of class pass GPIO pins numbers
     stepper = Stepper()
     io = IO(stepper.mymotortest)
-
-    stepper.calibrate()
-    for i in range(100):
-        stepper.moveStepper("down", stepper.mmToStep(0.02))
-        time.sleep(0.1)
-    stepper.moveStepper("up", stepper.mmToStep(5))
+    #while(1):
+    #    if(io.readButton1()):
+    #        stepper.calibrate()
+    #stepper.moveStepper("down", stepper.mmToStep(5))
     stepper.setRest()
     # call the function, pass the arguments
     #mymotortest.motor_go(up, "Full" , 500, .002, True, .05)
