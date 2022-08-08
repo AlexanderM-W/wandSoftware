@@ -24,14 +24,18 @@ class Stepper():
         self.mymotortest = RpiMotorLib.A4988Nema(self.direction, self.step, self.GPIO_pins, "A4988")
 
     def moveStepper(self, up_or_down, steps):
+        self.enableStepper()
         if(up_or_down == "up"):
             self.mymotortest.motor_go(self.up, "Full" , steps, .002, True, .05)
         elif(up_or_down == "down"):
             self.mymotortest.motor_go(self.down, "Full" , steps, .002, True, .05)
+        self.disableStepper()
 
     def calibrate(self):
-        self.mymotortest.motor_go(self.down, "Full", 2000, 0.001, True, 0.05)
-        self.mymotortest.motor_go(self.up, "Full" , 15000, .0008, True, .05)
+        self.enableStepper()
+        self.mymotortest.motor_go(self.down, "Full", 1800, 0.0008, True, 0.05)
+        self.mymotortest.motor_go(self.up, "Full" , 15000, 0.0008, True, .05)
+        self.disableStepper()
 
     def setRest(self):
         #GPIO.output(self.step, GPIO.LOW)
@@ -48,23 +52,17 @@ class Stepper():
         GPIO.output(self.enable, GPIO.HIGH)
 
 def handler(signum, frame):
-    res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
-    if res == 'y':
-        stepper.setRest()
-        exit(1)
+    stepper.setRest()
+    exit(1)
  
 signal.signal(signal.SIGINT, handler)
 
 if __name__ == "__main__":
-    
-    # Declare an named instance of class pass GPIO pins numbers
+
     stepper = Stepper()
     io = IO(stepper.mymotortest)
     while(1):
         if(io.readButton1()):
             stepper.calibrate()
-    #stepper.moveStepper("down", stepper.mmToStep(5))
-    #stepper.setRest()
-    # call the function, pass the arguments
-    #mymotortest.motor_go(up, "Full" , 500, .002, True, .05)
+            stepper.moveStepper("down", stepper.mmToStep(5))
     
