@@ -1,6 +1,7 @@
 #/bin/python3
 
 import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
+import time
 GPIO.setwarnings(False) # Ignore warning for now
 GPIO.setmode(GPIO.BCM) # Use physical pin numbering
 
@@ -32,30 +33,34 @@ class IO:
         GPIO.setup(self.SW2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.SW3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-        GPIO.add_event_detect(self.Button1, GPIO.RISING, callback=self.Button1_callback, bouncetime=100)
-        GPIO.add_event_detect(self.SW1, GPIO.RISING, callback=self.SW1_callback, bouncetime=100)
+        #GPIO.add_event_detect(self.Button1, GPIO.RISING, callback=self.Button1_callback, bouncetime=100)
+        self.ok_time = time.time()
 
-    def Button1_callback(self, channel):
-        print("Button1 was pushed!")
-        self.motorClass.motor_stop()
-        while(GPIO.input(self.Button1) ==GPIO.HIGH):
-            GPIO.output(self.LED1, GPIO.LOW)
+        self.interrupt_timeout = 3
+        GPIO.add_event_detect(self.SW1, GPIO.RISING, callback=self.SW1_callback, bouncetime=400)
+
+    def set_SW1_timeout(self, timeout): 
+        self.interrupt_timeout = timeout
 
     def SW1_callback(self, channel):
-        print("endstop1 clicked")
+        if(GPIO.input(self.SW1)==GPIO.LOW):
+            if(time.time() > self.ok_time):
+                self.motorClass.motor_stop()
+                self.ok_time = time.time() + self.interrupt_timeout
+            #self.motorClass.motor_go(1, "Full" , 500, .002, True, .05)
+                print("SW1 clicked")
+    
+    def readButton1(self):
+        if(GPIO.input(self.Button1)==GPIO.HIGH):
+            return 1
+        else:
+            return 0
 
 
 if __name__ == "__main__":
     io = IO()
-
-
-    
-
-    while True: # Run forever
-
-        
-            
-        
+    while True:       
+        print(io.readButton1())
         GPIO.output(io.LED1, GPIO.HIGH)
         GPIO.output(io.LED2, GPIO.HIGH)
         GPIO.output(io.LED3, GPIO.HIGH)
