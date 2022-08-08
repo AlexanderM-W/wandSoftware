@@ -26,16 +26,18 @@ class Stepper():
     def moveStepper(self, up_or_down, steps):
         self.enableStepper()
         if(up_or_down == "up"):
-            self.mymotortest.motor_go(self.up, "Full" , steps, .002, True, .05)
+            self.mymotortest.motor_go(self.up, "Full" , steps, .002, False, .05)
         elif(up_or_down == "down"):
-            self.mymotortest.motor_go(self.down, "Full" , steps, .002, True, .05)
+            self.mymotortest.motor_go(self.down, "Full" , steps, .002, False, .05)
         self.disableStepper()
 
     def calibrate(self):
         self.enableStepper()
-        self.mymotortest.motor_go(self.down, "Full", 1800, 0.0008, True, 0.05)
-        self.mymotortest.motor_go(self.up, "Full" , 15000, 0.0008, True, .05)
+        self.mymotortest.motor_go(self.down, "Full", 1800, 0.0008, False, 0.05)
+        self.mymotortest.motor_go(self.up, "Full" , 15000, 0.0008, False, .05)
         self.disableStepper()
+
+        print("Calibration completed")
 
     def setRest(self):
         #GPIO.output(self.step, GPIO.LOW)
@@ -52,6 +54,7 @@ class Stepper():
         GPIO.output(self.enable, GPIO.HIGH)
 
 def handler(signum, frame):
+    print("Goodbye")
     stepper.setRest()
     exit(1)
  

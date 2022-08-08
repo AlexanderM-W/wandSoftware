@@ -8,7 +8,6 @@ GPIO.setmode(GPIO.BCM) # Use physical pin numbering
 
 class IO:
     def __init__(self, motorClass=0):
-
         self.motorClass = motorClass
 
         self.SW1 = 9
@@ -43,11 +42,12 @@ class IO:
         self.interrupt_timeout = timeout
 
     def SW1_callback(self, channel):
+        # Control loop if the device is already calibrated
         if(GPIO.input(self.SW1)==GPIO.LOW):
+            # interrupt debounce
             if(time.time() > self.ok_time):
                 self.motorClass.motor_stop()
                 self.ok_time = time.time() + self.interrupt_timeout
-            #self.motorClass.motor_go(1, "Full" , 500, .002, True, .05)
         print("SW1 clicked")
     
     def readButton1(self):
