@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 from RpiMotorLib import RpiMotorLib
 from IO import IO
 import time
+import signal
     
 
 class Stepper():    
@@ -46,16 +47,24 @@ class Stepper():
     def disableStepper(self):
         GPIO.output(self.enable, GPIO.HIGH)
 
+def handler(signum, frame):
+    res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
+    if res == 'y':
+        stepper.setRest()
+        exit(1)
+ 
+signal.signal(signal.SIGINT, handler)
+
 if __name__ == "__main__":
     
     # Declare an named instance of class pass GPIO pins numbers
     stepper = Stepper()
     io = IO(stepper.mymotortest)
-    #while(1):
-    #    if(io.readButton1()):
-    #        stepper.calibrate()
+    while(1):
+        if(io.readButton1()):
+            stepper.calibrate()
     #stepper.moveStepper("down", stepper.mmToStep(5))
-    stepper.setRest()
+    #stepper.setRest()
     # call the function, pass the arguments
     #mymotortest.motor_go(up, "Full" , 500, .002, True, .05)
     
