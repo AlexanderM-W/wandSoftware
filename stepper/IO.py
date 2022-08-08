@@ -48,7 +48,7 @@ class IO:
                 self.motorClass.motor_stop()
                 self.ok_time = time.time() + self.interrupt_timeout
             #self.motorClass.motor_go(1, "Full" , 500, .002, True, .05)
-                print("SW1 clicked")
+        print("SW1 clicked")
     
     def readButton1(self):
         if(GPIO.input(self.Button1)==GPIO.HIGH):
@@ -60,7 +60,7 @@ class IO:
 if __name__ == "__main__":
     io = IO()
     while True:       
-        print(io.readButton1())
+        #print(io.readButton1())
         GPIO.output(io.LED1, GPIO.HIGH)
         GPIO.output(io.LED2, GPIO.HIGH)
         GPIO.output(io.LED3, GPIO.HIGH)
