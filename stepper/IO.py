@@ -37,7 +37,7 @@ class IO:
 
         self.interrupt_timeout = 3
         GPIO.add_event_detect(self.SW1, GPIO.RISING, callback=self.SW1_callback, bouncetime=400)
-        GPIO.add_event_detect(self.Button1, GPIO.RISING, callback=self.Button1_callback, bouncetime=100)
+        #GPIO.add_event_detect(self.Button1, GPIO.RISING, callback=self.Button1_callback, bouncetime=100)
 
     def set_SW1_timeout(self, timeout): 
         self.interrupt_timeout = timeout
@@ -54,7 +54,7 @@ class IO:
     
     def Button1_callback(self, channel):
         print("Button1 clicked")
-        self.motorClass.calibrate()
+        #self.motorClass.calibrate()
         #print(self.motorClass.calibrate())
         #self.motorClass.mymotortest.calibrate()
 
