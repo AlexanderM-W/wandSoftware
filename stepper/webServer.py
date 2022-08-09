@@ -2,6 +2,8 @@ from flask import Flask, redirect, url_for, render_template, request
 import sys
 import stepperTest
 import IO
+import threading
+import time
 
 app = Flask(__name__)
 
@@ -43,9 +45,18 @@ def index_post():
    slider = request.form['slider']
    return str(slider)
 
+def testButton1(io, stepper):
+   while(1):
+      #print(f"Button1 clicked {io.readButton1()}")
+      if(io.readButton1()):
+         stepper.calibrate()
+      time.sleep(0.01)
 
 stepper = stepperTest.Stepper()
 io = IO.IO(stepper)
 
 if __name__ == '__main__':
+   thread = threading.Thread(target=testButton1, args=(io,stepper,))
+   #thread.daemon = True         # Daemonize 
+   thread.start()
    app.run(debug = True, host = "0.0.0.0")
