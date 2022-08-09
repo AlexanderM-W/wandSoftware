@@ -95,11 +95,12 @@ if __name__ == "__main__":
     io = IO(stepper)
     while(1):
         if(io.readButton1()):
+            
             stepper.calibrate()
-            print(stepper.currentHeight)
-            stepper.moveStepper("down", stepper.mm2steps(5))
-            print(stepper.currentHeight)
+            #print(stepper.currentHeight)
+            #stepper.moveStepper("down", stepper.mm2steps(5))
+            #print(stepper.currentHeight)
             #stepper.moveStepper("up", stepper.mm2steps(2))
             #print(stepper.currentHeight)
-            stepper.go2pose_mm(3.5)
-            print(stepper.currentHeight)
+            #stepper.go2pose_mm(3.5)
+            #print(stepper.currentHeight)
