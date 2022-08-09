@@ -32,24 +32,33 @@ class IO:
         GPIO.setup(self.SW2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.SW3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-        #GPIO.add_event_detect(self.Button1, GPIO.RISING, callback=self.Button1_callback, bouncetime=100)
+        
         self.ok_time = time.time()
 
         self.interrupt_timeout = 3
         GPIO.add_event_detect(self.SW1, GPIO.RISING, callback=self.SW1_callback, bouncetime=400)
+        GPIO.add_event_detect(self.Button1, GPIO.RISING, callback=self.Button1_callback, bouncetime=100)
 
     def set_SW1_timeout(self, timeout): 
         self.interrupt_timeout = timeout
 
     def SW1_callback(self, channel):
         # Control loop if the device is already calibrated
+        print("SW1 clicked")
         if(GPIO.input(self.SW1)==GPIO.LOW):
             # interrupt debounce
             if(time.time() > self.ok_time):
-                self.motorClass.motor_stop()
+                self.motorClass.motorStop()
                 self.ok_time = time.time() + self.interrupt_timeout
-        print("SW1 clicked")
+        
     
+    def Button1_callback(self, channel):
+        print("Button1 clicked")
+        self.motorClass.calibrate()
+        #print(self.motorClass.calibrate())
+        #self.motorClass.mymotortest.calibrate()
+
+        
     def readButton1(self):
         if(GPIO.input(self.Button1)==GPIO.HIGH):
             return 1
