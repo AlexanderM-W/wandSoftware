@@ -4,6 +4,7 @@ import stepperTest
 import IO
 import threading
 import time
+import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
 
 app = Flask(__name__)
 
@@ -13,9 +14,9 @@ app = Flask(__name__)
 def error():
    return "An error occurred. Please try again."
 
-@app.route('/moveStepper_mm/<up_or_down>/<steps>/')
-def moveStepper(up_or_down, steps):
-   stepper.moveStepper(up_or_down, stepper.mm2steps(float(steps)))
+@app.route('/moveStepper_mm/<up_or_down>/<mm>/')
+def moveStepper(up_or_down, mm):
+   stepper.moveStepper(up_or_down, stepper.mm2steps(float(mm)))
    return str(stepper.getCurrentHeight_mm())
 
 #@app.route('/moveStepper_mm')
@@ -49,7 +50,9 @@ def testButton1(io, stepper):
    while(1):
       #print(f"Button1 clicked {io.readButton1()}")
       if(io.readButton1()):
-         stepper.calibrate()
+         stepper.moveStepper("down",50)
+         if(GPIO.input(io.SW1)==GPIO.LOW):
+            stepper.calibrate()
       time.sleep(0.01)
 
 stepper = stepperTest.Stepper()

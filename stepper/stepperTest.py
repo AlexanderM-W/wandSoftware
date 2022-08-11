@@ -46,6 +46,7 @@ class Stepper():
         self.enableStepper()
         self.mymotortest.motor_go(self.down, "Full", 1800, 0.0008, False, 0.05)
         self.mymotortest.motor_go(self.up, "Full", 15000, 0.0008, False, .05)
+        self.mymotortest.motor_go(self.down, "Full", 100, 0.0008, False, 0.05)
         self.disableStepper()
 
         print("Calibration completed")

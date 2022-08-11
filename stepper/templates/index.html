@@ -5,20 +5,34 @@
 </head>
 <body>
 
-<a href="/moveStepper_mm">moveStepper_mm</a> 
-
-<meta http-equiv="moveStepper_mm" content="5; URL=/moveStepper_mm" />
-
-<form method="POST">
-  <input name="text">
-  <input type="submit">
-</form>
 
 
-<form method="POST">
-    <input name="slider" type="range" min="1" max="100" value="50" class="slider" id="myRange">
-    <input type="submit" value="submit" />
-</form>
+
+<ul>
+  
+  <li>calibrationPlatform.local/go2pose_mm/&ltpose_mm&gt</li>
+    <ul>
+      <li>Goes to a certain pose, regardless of the current pose. Takes the wanted pose in mm as input</li>
+    </ul>
+  
+  <li>calibrationPlatform.local/calibrate</li>
+    <ul>
+      <li>Calibrates the target bed. Takes no input.</li>
+    </ul>
+  
+  <li>calibrationPlatform.local/getCurrentHeight_mm</li>
+    <ul>
+      <li>Returns the current pose in mm. Takes no input</li>
+    </ul>
+
+  <li>calibrationPlatform.local/moveStepper_mm/&ltup_or_down&gt/&ltmm&gt/</li>
+    <ul>
+      <li>Moves the stepper from the current pose. Takes direction and mm travel as input.</li>    
+    </ul>
+</ul> 
+
+
+
 
 </body>
 </html> 
