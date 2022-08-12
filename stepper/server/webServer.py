@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, render_template, request
 import sys
-import stepperTest
+import stepperLib
 import IO
 import threading
 import time
