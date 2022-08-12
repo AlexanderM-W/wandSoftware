@@ -21,8 +21,7 @@ class Menu():
     3: Move stepper x mm in y direction \n \
     4: Go to pose x in mm \n \
     5: Take a picture \n \
-    6: move n steps with x mm spacing\n \
-    7: Clear all images")
+    6: Move n steps with x mm spacing and capture images")
 
         self.option = 0
 
@@ -41,9 +40,8 @@ class Menu():
             name = input("input pic fileName: ")
             self.takePic(name)
         elif(self.option == 6):
-            self.height = self.moveInterval()
-        elif(self.option == 7):
             self.clearImg()
+            self.height = self.moveInterval()
         else:
             self.infoPage()
             
@@ -94,13 +92,14 @@ class Menu():
         urllib.request.urlretrieve(f"{url}&dias=1", f"{pwd}/pictures_dias/{name}.png")
 
     def moveInterval(self):
-        print("The platform will start at height A and move down to heigt B at a interval x given in mm")
+        print("The platform will start at height A and move down to heigt B at an interval x given in mm")
         startPose = input("Enter start pose A: ")
         endPose = input("Enter end pose B: ")
         stepInterval = input("Enter step interval x in mm: ")
 
         stepArray = np.arange(float(startPose),float(endPose),float(stepInterval))
         print(stepArray)
+        name_height_translation = ""
         for idx,i in enumerate(stepArray):
             self.go2pose(i)
             self.takePic(idx)
@@ -109,6 +108,8 @@ class Menu():
         # post-fence fix
         self.go2pose(i+float(stepInterval))
         self.takePic(idx+1)
+        print(f"moving to: {i+float(stepInterval)}")
+        name_height_translation += f"{idx}:{i+float(stepInterval)}\n"
 
 
         
