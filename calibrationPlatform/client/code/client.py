@@ -35,7 +35,8 @@ class Menu():
             self.height = self.moveStepper()
         elif(self.option == 4):
             pose = input("Enter pose in mm: ")
-            self.height = self.go2pose(pose)
+            code = self.go2pose(pose)
+            #print(code.text)
         elif(self.option == 5):
             name = input("input pic fileName: ")
             self.takePic(name)
@@ -48,6 +49,7 @@ class Menu():
             
     def calibrate(self):
         response = requests.get(f"http://{self.rigIP}:5000/calibrate/") 
+        self.getCurrentPose()
         return response
 
     def getCurrentPose(self):
