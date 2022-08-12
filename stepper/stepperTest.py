@@ -21,24 +21,26 @@ class Stepper():
         self.enable = 14
         GPIO.setup(self.enable, GPIO.OUT)
 
-        self.up = 0
-        self.down = 1
-        self.maxSteps = 13000
+        self.up = 1
+        self.down = 0
+        self.maxSteps = 11000
 
         self.mymotortest = RpiMotorLib.A4988Nema(self.direction, self.step, self.GPIO_pins, "A4988")
+
+
 
     def moveStepper(self, up_or_down, steps):
         steps = int(steps)
         self.enableStepper()
         if(up_or_down == "up"):
             self.currentHeight -= self.steps2mm(steps)
-            self.mymotortest.motor_go(self.up, "Full", steps, .002, False, .05)
+            self.mymotortest.motor_go(self.up, "Full", steps, .0008, False, .05)
         elif(up_or_down == "down"):
             if(self.getCurrentHeight_mm() + self.steps2mm(steps) > self.steps2mm(self.maxSteps)):
                 raise Exception("The target is out of range")
 
             self.currentHeight += self.steps2mm(steps)
-            self.mymotortest.motor_go(self.down, "Full", steps, .002, False, .05)
+            self.mymotortest.motor_go(self.down, "Full", steps, .0008, False, .05)
         self.disableStepper()
 
     def calibrate(self):
@@ -72,10 +74,10 @@ class Stepper():
         return self.currentHeight
 
     def go2pose_mm(self, pose_mm):
-        if(self.getCurrentHeight_mm() > pose_mm):
-            self.moveStepper("up", self.mm2steps(self.getCurrentHeight_mm() + pose_mm))
-        elif(self.getCurrentHeight_mm() < pose_mm):
-            self.moveStepper("down", self.mm2steps(pose_mm - self.getCurrentHeight_mm()))
+        if(self.getCurrentHeight_mm() > float(pose_mm)):
+            self.moveStepper("up", self.mm2steps(self.getCurrentHeight_mm() - pose_mm))
+        elif(self.getCurrentHeight_mm() < float(pose_mm) ):
+            self.moveStepper("down", self.mm2steps(pose_mm - self.getCurrentHeight_mm()) )
         else:
             return 0
 
