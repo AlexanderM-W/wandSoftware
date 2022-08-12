@@ -56,7 +56,7 @@ def testButton1(io, stepper):
             stepper.calibrate()
       time.sleep(0.01)
 
-stepper = stepperTest.Stepper()
+stepper = stepperLib.Stepper()
 io = IO.IO(stepper)
 
 if __name__ == '__main__':
