@@ -80,7 +80,7 @@ class Menu():
     
     def takePic(self,name):
         
-        url = "http://10.11.131.182:8080/pic/picture?size=100"
+        url = f"http://{self.wandIP}:8080/pic/picture?size=100"
         #response = requests.get(url)
         pwd = os.path.dirname(os.path.realpath(__file__))
 
