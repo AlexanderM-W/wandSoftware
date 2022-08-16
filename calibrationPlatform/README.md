@@ -22,14 +22,14 @@ The above options are explained below
 The server folder holds 4 scripts and some directories used by flask. The disableStepper_boot.sh should run at startup as it ensures that the stepper is software disabled. Otherwise the stepper is always on and consumes power. The IO.py is a library file and contains an IO class which provides an interface to various buttons and endstops. It also configures an interrupt routine for the endstop switch used in the calibration of the device. The stepperLib.py is also a library that contains a Stepper class. It provides an interface to the stepper as well as various usefull functions.
 The webServer.py ties everything together and is started on boot. It listens for request on following URL's
 
-1. calibrationIP/moveStepper_mm/<up_or_down>/<mm>/
+1. calibrationIP:5000/moveStepper_mm/<up_or_down>/<mm>/
   - Moves the stepper <up_or_down> should be either "up" or "down" and mm is capped at 55mm or whenever the calibration endstop is engaged
-2. calibrationIP/go2pose_mm/<pose_mm>/
+2. calibrationIP:5000/go2pose_mm/<pose_mm>/
   - Moves the target bed to a desired global pose, if <pose_mm> is above 55mm the target bed will not move 
-3. calibrationIP/calibrate/
+3. calibrationIP:5000/calibrate/
   - Calibrate the stepper
-4. calibrationIP/getCurrentPose_mm/
+4. calibrationIP:5000/getCurrentPose_mm/
   - Return the current global pose in mm.
-5. calibrationIP/
+5. calibrationIP:5000/
   - Displays the index file, which is empty
 
