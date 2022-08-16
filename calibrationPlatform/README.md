@@ -10,8 +10,8 @@ The client folder holds 3 subdirectories pictures_noLight, pictures_flash and pi
     5: Take a picture 
     6: Move n steps with x mm spacing and capture images
 
-
-1. Calibrate the scanner and takes no arguments.
+The above options are explained below
+1. Calibrates the scanner and takes no arguments.
 2. Displays the current global pose of the target bed and takes no arguments.
 3. Takes 2 arguments, the amount of travel and the direction to travel in. The client program further prompts the user and instructs the user on what to input when.
 4. Takes 1 argument which is the desired global pose of the target bed.
