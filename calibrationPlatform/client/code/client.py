@@ -3,15 +3,15 @@ import requests
 import numpy as np
 import urllib.request
 import os
-import glob
+import shutil
 
 class Menu():
     def __init__(self):
         #self.rigIP = "calibrationPlatform.local"
         #self.wandIP = input("Input IP of wand (default: danwand.local): ")
 
-        self.rigIP = "10.11.131.184"
-        self.wandIP = "10.11.131.182"
+        self.rigIP = "calibrationPlatform.local"
+        self.wandIP = "10.11.131.123"
         self.clearImg()
 
     def infoPage(self):
@@ -81,15 +81,24 @@ class Menu():
         url = f"http://{self.wandIP}:8080/pic/picture?size=100"
         #response = requests.get(url)
         pwd = os.path.dirname(os.path.realpath(__file__))
+        try:
+            os.mkdir(f"{pwd}/images/")
+        except:
+            pass
+        try:
+            os.mkdir(f"{pwd}/images/render{name}")
+        except:
+            pass
+        
 
         print("Taking a picture - no light")
-        urllib.request.urlretrieve(f"{url}", f"{pwd}/pictures_noLight/{name}.png")
+        urllib.request.urlretrieve(f"{url}", f"{pwd}/images/render{name}/9.png")
 
         print("Taking a picture - flash")
-        urllib.request.urlretrieve(f"{url}&flash=1", f"{pwd}/pictures_flash/{name}.png")
+        urllib.request.urlretrieve(f"{url}&flash=1", f"{pwd}/images/render{name}/8.png")
 
         print("Taking a picture - dias")
-        urllib.request.urlretrieve(f"{url}&dias=1", f"{pwd}/pictures_dias/{name}.png")
+        urllib.request.urlretrieve(f"{url}&dias=1", f"{pwd}/images/render{name}/0.png")
 
     def moveInterval(self):
         print("The platform will start at height A and move down to heigt B at an interval x given in mm")
@@ -126,6 +135,13 @@ class Menu():
 
     def clearImg(self):
         pwd = os.path.dirname(os.path.realpath(__file__))
+        
+        #os.rmdir(f"{pwd}/images/")
+        try:
+            shutil.rmtree(f"{pwd}/images")
+        except:
+            pass
+        '''
         files = glob.glob(f"{pwd}/pictures_noLight/*")
         for f in files:
             os.remove(f)
@@ -137,6 +153,7 @@ class Menu():
         files = glob.glob(f"{pwd}/pictures_dias/*")
         for f in files:
             os.remove(f)
+        '''
         
 if __name__ == "__main__":
     menu = Menu()
