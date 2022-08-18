@@ -4,6 +4,8 @@ import numpy as np
 import urllib.request
 import os
 import shutil
+from PIL import Image
+import glob
 
 class Menu():
     def __init__(self):
@@ -78,7 +80,7 @@ class Menu():
     
     def takePic(self,name):
         
-        url = f"http://{self.wandIP}:8080/pic/picture?size=100"
+        url = f"http://{self.wandIP}:8080/pic/picture?size=160"
         #response = requests.get(url)
         pwd = os.path.dirname(os.path.realpath(__file__))
         try:
@@ -92,13 +94,21 @@ class Menu():
         
 
         print("Taking a picture - no light")
-        urllib.request.urlretrieve(f"{url}", f"{pwd}/images/render{name}/9.png")
+        urllib.request.urlretrieve(f"{url}", f"{pwd}/images/render{name}/image9.jpg")
+        im = Image.open(f"{pwd}/images/render{name}/image9.jpg")
+        im.save(f"{pwd}/images/render{name}/image9.png")
 
         print("Taking a picture - flash")
-        urllib.request.urlretrieve(f"{url}&flash=1", f"{pwd}/images/render{name}/8.png")
+        urllib.request.urlretrieve(f"{url}&flash=1", f"{pwd}/images/render{name}/image8.jpg")
+        im = Image.open(f"{pwd}/images/render{name}/image8.jpg")
+        im.save(f"{pwd}/images/render{name}/image8.png")
 
         print("Taking a picture - dias")
-        urllib.request.urlretrieve(f"{url}&dias=1", f"{pwd}/images/render{name}/0.png")
+        urllib.request.urlretrieve(f"{url}&dias=1", f"{pwd}/images/render{name}/image0.jpg")
+        im = Image.open(f"{pwd}/images/render{name}/image0.jpg")
+        im.save(f"{pwd}/images/render{name}/image0.png")
+
+        self.clearJPG(name)
 
     def moveInterval(self):
         print("The platform will start at height A and move down to heigt B at an interval x given in mm")
@@ -132,6 +142,8 @@ class Menu():
 
         f.close()
 
+        self.calibrate()
+
 
     def clearImg(self):
         pwd = os.path.dirname(os.path.realpath(__file__))
@@ -141,19 +153,16 @@ class Menu():
             shutil.rmtree(f"{pwd}/images")
         except:
             pass
-        '''
-        files = glob.glob(f"{pwd}/pictures_noLight/*")
+
+    def clearJPG(self,name):
+        pwd = os.path.dirname(os.path.realpath(__file__))
+        
+        files = glob.glob(f"{pwd}/images/render{name}/*.jpg")
         for f in files:
             os.remove(f)
         
-        files = glob.glob(f"{pwd}/pictures_flash/*")
-        for f in files:
-            os.remove(f)
+
         
-        files = glob.glob(f"{pwd}/pictures_dias/*")
-        for f in files:
-            os.remove(f)
-        '''
         
 if __name__ == "__main__":
     menu = Menu()
