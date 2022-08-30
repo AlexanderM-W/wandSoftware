@@ -6,14 +6,16 @@ import os
 import shutil
 from PIL import Image
 import glob
+from datetime import date
+
 
 class Menu():
     def __init__(self):
         #self.rigIP = "calibrationPlatform.local"
         #self.wandIP = input("Input IP of wand (default: danwand.local): ")
 
-        self.rigIP = "calibrationPlatform.local"
-        self.wandIP = "10.11.131.123"
+        self.rigIP = "10.11.131.77"
+        self.wandIP = "10.11.131.78"
         self.clearImg()
 
     def infoPage(self):
@@ -131,14 +133,17 @@ class Menu():
         name_height_translation += f"{idx}:{i+float(stepInterval)}\n"
 
 
-        
+        zoom = self.getParams()
+        today = date.today()
         pwd = os.path.dirname(os.path.realpath(__file__))
-        f = open(f"{pwd}/params.txt", 'w')
+        f = open(f"{pwd}/images/params.txt", 'w')
         f.write(f"Number of images: {len(stepArray)+1}\n \
-        Start height: {startPose} mm\n \
-        End height : {endPose} mm\n \
-        Distance between images: {stepInterval} mm\n \
-        Name Height translation (name:height): {name_height_translation}")
+Start height: {startPose} mm\n \
+End height : {endPose} mm\n \
+Distance between images: {stepInterval} mm\n \
+Zoom (last value is zoom): {zoom}\n \
+Date: {today}") 
+        
 
         f.close()
 
@@ -161,12 +166,38 @@ class Menu():
         for f in files:
             os.remove(f)
         
+    def getParams(self):
+ #       response = requests.get(f"http://{self.wandIP}:8080/pic/info")
+        #print(response.content)
+  #      response_json = json.loads(str(response.content))
+  #      print(response_json["zoom"]) 
+
+        import json,urllib.request
+        data = urllib.request.urlopen(f"http://{self.wandIP}:8080/pic/info").read()
+        data = str(data)
+        idx = data.find("zoom")
+        data = data[idx-1:]
+       
+        data = data.replace("\\", "")
+        data = data.replace('<br><a href="/">', "")        
+        data = data.replace("Back</a>'", "")
+        data = data.replace("<br />", "")
+        data = data.replace("'", '"')
+        data = data.replace("}","")
+        data = data.replace('"zoom": ', "")
+        return data
+
+
+        #print(data)
+        #output = json.loads(str(data))
+        #print (output)
 
         
         
 if __name__ == "__main__":
-    menu = Menu()
 
+    menu = Menu()
+    menu.getParams()
     if(menu.wandIP==""):
         menu.wandIP = "danwand.local"
 
