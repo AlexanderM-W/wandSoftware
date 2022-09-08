@@ -1,5 +1,5 @@
 from urllib import response
-import requests  
+import requests
 import numpy as np
 import urllib.request
 import os
@@ -7,13 +7,13 @@ import shutil
 from PIL import Image
 import glob
 
+
 class Menu():
     def __init__(self):
-        #self.rigIP = "calibrationPlatform.local"
-        #self.wandIP = input("Input IP of wand (default: danwand.local): ")
-
+        # self.rigIP = "calibrationPlatform.local"
+        # self.wandIP = input("Input IP of wand (default: danwand.local): ")
         self.rigIP = "calibrationPlatform.local"
-        self.wandIP = "10.11.131.123"
+        self.wandIP = "cm4.local"
         self.clearImg()
 
     def infoPage(self):
@@ -23,7 +23,8 @@ class Menu():
     3: Move stepper x mm in y direction \n \
     4: Go to pose x in mm \n \
     5: Take a picture \n \
-    6: Move n steps with x mm spacing and capture images")
+    6: Move n steps with x mm spacing and capture images \n \
+    7: To capture images independent of the platform")
 
         self.option = 0
 
@@ -37,23 +38,26 @@ class Menu():
         elif(self.option == 4):
             pose = input("Enter pose in mm: ")
             code = self.go2pose(pose)
-            #print(code.text)
+            # print(code.text)
         elif(self.option == 5):
             name = input("input pic fileName: ")
             self.takePic(name)
         elif(self.option == 6):
             self.clearImg()
             self.height = self.moveInterval()
+        elif(self.option == 7):
+            self.clearImg()
+            test = self.takePic_dataset()
         else:
             self.infoPage()
-            
+
     def calibrate(self):
-        response = requests.get(f"http://{self.rigIP}:5000/calibrate/") 
+        response = requests.get(f"http://{self.rigIP}:5000/calibrate/")
         self.getCurrentPose()
         return response
 
     def getCurrentPose(self):
-        response = requests.get(f"http://{self.rigIP}:5000/getCurrentPose_mm/") 
+        response = requests.get(f"http://{self.rigIP}:5000/getCurrentPose_mm/")
         print(f"\nCurrent pose is: {response.text}")
         return response
 
@@ -67,21 +71,22 @@ class Menu():
             print(f"{direction} is an invalid option")
             self.moveStepper()
 
-        x_mm = input("Enter travel in mm: ") 
+        x_mm = input("Enter travel in mm: ")
 
-        response = requests.get(f"http://{self.rigIP}:5000/moveStepper_mm/{direction}/{x_mm}/")
+        response = requests.get(
+            f"http://{self.rigIP}:5000/moveStepper_mm/{direction}/{x_mm}/")
         return response
 
     def go2pose(self, pose):
         print("Moving stepper")
-        #pose = input("Enter desired pose: ")
+        # pose = input("Enter desired pose: ")
         response = requests.get(f"http://{self.rigIP}:5000/go2pose_mm/{pose}/")
         return response
-    
-    def takePic(self,name):
-        
+
+    def takePic(self, name):
+
         url = f"http://{self.wandIP}:8080/pic/picture?size=160"
-        #response = requests.get(url)
+        # response = requests.get(url)
         pwd = os.path.dirname(os.path.realpath(__file__))
         try:
             os.mkdir(f"{pwd}/images/")
@@ -91,24 +96,40 @@ class Menu():
             os.mkdir(f"{pwd}/images/render{name}")
         except:
             pass
-        
 
         print("Taking a picture - no light")
-        urllib.request.urlretrieve(f"{url}", f"{pwd}/images/render{name}/image9.jpg")
+        urllib.request.urlretrieve(
+            f"{url}", f"{pwd}/images/render{name}/image9.jpg")
         im = Image.open(f"{pwd}/images/render{name}/image9.jpg")
         im.save(f"{pwd}/images/render{name}/image9.png")
 
         print("Taking a picture - flash")
-        urllib.request.urlretrieve(f"{url}&flash=1", f"{pwd}/images/render{name}/image8.jpg")
+        urllib.request.urlretrieve(
+            f"{url}&flash=1", f"{pwd}/images/render{name}/image8.jpg")
         im = Image.open(f"{pwd}/images/render{name}/image8.jpg")
         im.save(f"{pwd}/images/render{name}/image8.png")
 
         print("Taking a picture - dias")
-        urllib.request.urlretrieve(f"{url}&dias=1", f"{pwd}/images/render{name}/image0.jpg")
+        urllib.request.urlretrieve(
+            f"{url}&dias=1", f"{pwd}/images/render{name}/image0.jpg")
         im = Image.open(f"{pwd}/images/render{name}/image0.jpg")
         im.save(f"{pwd}/images/render{name}/image0.png")
 
         self.clearJPG(name)
+
+    def takePic_dataset(self):
+        takePic_dataset_name = 0
+        while(1):
+
+            command = input(
+                'Press enter for new image or enter "exit" to exit: ')
+            if(command == ""):
+                self.takePic(takePic_dataset_name)
+                takePic_dataset_name += 1
+            elif(command == "exit"):
+                takePic_dataset_name = 0
+                break
+        return 1
 
     def moveInterval(self):
         print("The platform will start at height A and move down to heigt B at an interval x given in mm")
@@ -116,10 +137,11 @@ class Menu():
         endPose = input("Enter end pose B: ")
         stepInterval = input("Enter step interval x in mm: ")
 
-        stepArray = np.arange(float(startPose),float(endPose),float(stepInterval))
+        stepArray = np.arange(float(startPose), float(
+            endPose), float(stepInterval))
         print(stepArray)
         name_height_translation = ""
-        for idx,i in enumerate(stepArray):
+        for idx, i in enumerate(stepArray):
             self.go2pose(i)
             self.takePic(idx)
             print(f"moving to: {i}")
@@ -130,8 +152,6 @@ class Menu():
         print(f"moving to: {i+float(stepInterval)}")
         name_height_translation += f"{idx}:{i+float(stepInterval)}\n"
 
-
-        
         pwd = os.path.dirname(os.path.realpath(__file__))
         f = open(f"{pwd}/params.txt", 'w')
         f.write(f"Number of images: {len(stepArray)+1}\n \
@@ -144,32 +164,28 @@ class Menu():
 
         self.calibrate()
 
-
     def clearImg(self):
         pwd = os.path.dirname(os.path.realpath(__file__))
-        
-        #os.rmdir(f"{pwd}/images/")
+
+        # os.rmdir(f"{pwd}/images/")
         try:
             shutil.rmtree(f"{pwd}/images")
         except:
             pass
 
-    def clearJPG(self,name):
+    def clearJPG(self, name):
         pwd = os.path.dirname(os.path.realpath(__file__))
-        
+
         files = glob.glob(f"{pwd}/images/render{name}/*.jpg")
         for f in files:
             os.remove(f)
-        
 
-        
-        
+
 if __name__ == "__main__":
     menu = Menu()
 
-    if(menu.wandIP==""):
+    if(menu.wandIP == ""):
         menu.wandIP = "danwand.local"
 
     while(1):
         menu.infoPage()
-
