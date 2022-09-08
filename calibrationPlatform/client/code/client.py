@@ -18,34 +18,37 @@ class Menu():
 
     def infoPage(self):
         print("\n Welcome! You have the following options. \n \
-    1: Calibrate \n \
-    2: Get current pose\n \
-    3: Move stepper x mm in y direction \n \
-    4: Go to pose x in mm \n \
-    5: Take a picture \n \
-    6: Move n steps with x mm spacing and capture images \n \
-    7: To capture images independent of the platform")
+    1: Change hostnames \n \
+    2: Calibrate \n \
+    3: Get current pose\n \
+    4: Move stepper x mm in y direction \n \
+    5: Go to pose x in mm \n \
+    6: Take a picture \n \
+    7: Move n steps with x mm spacing and capture images \n \
+    8: To capture images independent of the platform")
 
         self.option = 0
 
         self.option = int(input("Please enter a number: "))
-        if (self.option == 1):
+        if(self.option == 1):
+            self.changeHostname()
+        elif (self.option == 2):
             self.height = self.calibrate()
-        elif(self.option == 2):
-            self.heigt = self.getCurrentPose()
         elif(self.option == 3):
-            self.height = self.moveStepper()
+            self.heigt = self.getCurrentPose()
         elif(self.option == 4):
+            self.height = self.moveStepper()
+        elif(self.option == 5):
             pose = input("Enter pose in mm: ")
             code = self.go2pose(pose)
             # print(code.text)
-        elif(self.option == 5):
+        elif(self.option == 6):
             name = input("input pic fileName: ")
             self.takePic(name)
-        elif(self.option == 6):
+        elif(self.option == 7):
             self.clearImg()
             self.height = self.moveInterval()
-        elif(self.option == 7):
+        elif(self.option == 8):
             self.clearImg()
             test = self.takePic_dataset()
         else:
@@ -76,6 +79,18 @@ class Menu():
         response = requests.get(
             f"http://{self.rigIP}:5000/moveStepper_mm/{direction}/{x_mm}/")
         return response
+
+    def changeHostname(self):
+        rigIP_change = input(
+            "Enter new hostname/IP for the rig (press enter to leave unchanged): ")
+        wandIP_change = input(
+            "Enter new hostname/IP for the wand (press enter to leave unchanged): ")
+        if(rigIP_change != ""):
+            self.rigIP = rigIP_change
+        if(wandIP_change != ""):
+            self.wandIP = wandIP_change
+        print(
+            f"\nRig hostname/IP = {self.rigIP} \nWand hostname/IP = {self.wandIP}")
 
     def go2pose(self, pose):
         print("Moving stepper")
@@ -122,7 +137,7 @@ class Menu():
         while(1):
 
             command = input(
-                'Press enter for new image or enter "exit" to exit: ')
+                'Press enter to capture new image or enter "exit" to exit: ')
             if(command == ""):
                 self.takePic(takePic_dataset_name)
                 takePic_dataset_name += 1
