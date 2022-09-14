@@ -14,7 +14,7 @@ class Menu():
         # self.rigIP = "calibrationPlatform.local"
         # self.wandIP = input("Input IP of wand (default: danwand.local): ")
         self.rigIP = "calibrationPlatform.local"
-        self.wandIP = "cm4.local"
+        self.wandIP = "cm.local"
         self.clearImg()
 
     def infoPage(self):
@@ -229,7 +229,7 @@ Date: {today}")
 
 if __name__ == "__main__":
     menu = Menu()
-    menu.getParams()
+
     if(menu.wandIP == ""):
         menu.wandIP = "danwand.local"
 
