@@ -2,7 +2,7 @@ from time import sleep
 from gpiozero import  PWMLED #LED,
 from gpiozero.pins.rpigpio import RPiGPIOFactory
 from gpiozero.pins.pigpio import PiGPIOFactory
-
+import sys
 # pi_led_control
 # this module implement PWM Led control for GPIO
 
@@ -45,10 +45,10 @@ if __name__ == '__main__':
 #    lc.set_dias(False)
 #    sleep(2)
     #while(1):
-    lc.set_flash(0.1)
-    lc.set_dias(0.3)
-    sleep(2)
-    lc.set_dias(0.0)
-    lc.set_flash(0.0)
+    lc.set_flash(float(sys.argv[2]))
+    lc.set_dias(float(sys.argv[1]))
+    #sleep(2)
+    #lc.set_dias(0.0)
+    #lc.set_flash(0.0)
 #    sleep(11)
     #lc.off()
